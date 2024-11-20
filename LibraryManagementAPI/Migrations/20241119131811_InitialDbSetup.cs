@@ -4,50 +4,49 @@
 
 namespace LibraryManagementAPI.Migrations
 {
+    /// <inheritdoc />
     public partial class InitialDbSetup : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Create Authors table
             migrationBuilder.CreateTable(
                 name: "Authors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Biography = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true) // Biography can be up to 500 characters
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Biography = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Authors", x => x.Id);
                 });
 
-            // Create Borrowers table
             migrationBuilder.CreateTable(
                 name: "Borrowers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false) // Consider checking Email max length
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Borrowers", x => x.Id);
                 });
 
-            // Create Books table
             migrationBuilder.CreateTable(
                 name: "Books",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    ISBN = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: true), // ISBN is optional
-                    AuthorId = table.Column<int>(type: "int", nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BorrowerId = table.Column<int>(type: "int", nullable: true),
+                    AuthorId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,26 +56,36 @@ namespace LibraryManagementAPI.Migrations
                         column: x => x.AuthorId,
                         principalTable: "Authors",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade); // Cascade delete
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Books_Borrowers_BorrowerId",
+                        column: x => x.BorrowerId,
+                        principalTable: "Borrowers",
+                        principalColumn: "Id");
                 });
 
-            // Create index for Books on AuthorId
             migrationBuilder.CreateIndex(
                 name: "IX_Books_AuthorId",
                 table: "Books",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_BorrowerId",
+                table: "Books",
+                column: "BorrowerId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Books");
 
             migrationBuilder.DropTable(
-                name: "Borrowers");
+                name: "Authors");
 
             migrationBuilder.DropTable(
-                name: "Authors");
+                name: "Borrowers");
         }
     }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagementAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241118123516_AddBorrowerrelationship")]
-    partial class AddBorrowerrelationship
+    [Migration("20241119131811_InitialDbSetup")]
+    partial class InitialDbSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,54 +23,6 @@ namespace LibraryManagementAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Book", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BorrowerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("BorrowerId");
-
-                    b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("Borrower", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Borrowers");
-                });
 
             modelBuilder.Entity("LibraryManagementAPI.Models.Author", b =>
                 {
@@ -93,30 +45,76 @@ namespace LibraryManagementAPI.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("Book", b =>
+            modelBuilder.Entity("LibraryManagementAPI.Models.Book", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BorrowerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("BorrowerId");
+
+                    b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("LibraryManagementAPI.Models.Borrower", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Borrowers");
+                });
+
+            modelBuilder.Entity("LibraryManagementAPI.Models.Book", b =>
                 {
                     b.HasOne("LibraryManagementAPI.Models.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Borrower", "Borrower")
+                    b.HasOne("LibraryManagementAPI.Models.Borrower", "Borrower")
                         .WithMany("Books")
-                        .HasForeignKey("BorrowerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("BorrowerId");
 
                     b.Navigation("Author");
 
                     b.Navigation("Borrower");
                 });
 
-            modelBuilder.Entity("Borrower", b =>
+            modelBuilder.Entity("LibraryManagementAPI.Models.Author", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("LibraryManagementAPI.Models.Author", b =>
+            modelBuilder.Entity("LibraryManagementAPI.Models.Borrower", b =>
                 {
                     b.Navigation("Books");
                 });
